@@ -40,5 +40,5 @@ function completarFila(element, index, arr) {
                 
 
             </td>
-        </tr>`;
+        </tr>`
 }

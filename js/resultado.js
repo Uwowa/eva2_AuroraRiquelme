@@ -1,3 +1,4 @@
+let g_id_resultado = null;
 function agregarResultado() {
     //Obtenemos el resultado
     var resultado = document.getElementById("txt_resultado").value;
@@ -28,7 +29,6 @@ function agregarResultado() {
     
 }
 function listarResultados() {
-    //Configuración de la solicitud
     const requestOptions = {
         method: 'GET',
         redirect: 'follow'
@@ -37,11 +37,22 @@ function listarResultados() {
     fetch("http://144.126.136.43/api/resultado", requestOptions)
         .then((response) => response.json())
         .then((json) => {
-            json.forEach(completarFila);
+            const tbody = document.querySelector("#tbl_resultado tbody");
+            tbody.innerHTML = ""; // Limpia antes de agregar
+            json.forEach(element => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${element.id_resultado}</td>
+                        <td>${element.nombre_resultado}</td>
+                        <td>${element.fecha_registro}</td>
+                        <td>
+                            <a href='actualizar.html?id=${element.id_resultado}' class='btn btn-warning btn-sm'>Actualizar</a>
+                            <a href='eliminar.html?id=${element.id_resultado}' class='btn btn-danger btn-sm'>Eliminar</a>
+                        </td>
+                    </tr>`;
+            });
         })
-        .then((result) => console.log(result))
         .catch((error) => console.error(error));
-                
 }
 function completarFila(element,index,arr) {
     arr[index] = document.querySelector("#tbl_resultado tbody").innerHTML += 
