@@ -108,8 +108,13 @@ function eliminarResultado() {
         method: 'DELETE',
         redirect: 'follow'
     };
+
     fetch("http://144.126.136.43/api/resultado/"+g_id_resultado, requestOptions)
-        .then((response) => response.text())
+        .then((response) => {
+            if(response.status === 200){
+                window.location.href = "listar.html";
+            }
+        })
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
 }
@@ -139,5 +144,5 @@ function obtenerDatosEliminacion(id_resultado) {
 function completarEtiquetas(element,index,arr) {
     //Completamos una etiqueta con la pregunta al usuario
     var nombreEliminar = element.nombre_resultado;
-    document.getElementById("lbl_eliminar").innerHTML ="¿Desea eliminar el registro " + nombreEliminar + "?";
+    document.getElementById("lbl_eliminar").innerHTML ="<b>" + nombreEliminar + "</b>";
 }
