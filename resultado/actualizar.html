@@ -3,8 +3,7 @@
         <title>Actualizar Resultado</title>
         <script src="../js/resultado.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+9z4e5b6d3f8c1a2b5f8e5b6d3f8c1a2b5f8e5b6d3f8c1a2b5f8e5b6d3f8c1a" crossorigin="anonymous"></script>
-   
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body onload="obtenerIdActualizacion();">
         <div class="container">
@@ -12,23 +11,22 @@
             <div class="alert alert-primary" role="alert">
                 Complete los datos requeridos para actualizar el resultado.
             </div>
-            
             <hr>
             <div class="card">
                 <div class="card-header">
                     Formulario de Actualización
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form onsubmit="actualizarResultado(); return false;">
                         <div class="mb-3">
                             <label for="txt_nombre_resultado" class="form-label">Nombre Resultado</label>
                             <input type="text" class="form-control" id="txt_nombre_resultado" aria-describedby="txt_nombre_resultadoHelp">
                             <div id="txt_nombre_resultadoHelp" class="form-text">Incorpore el nuevo nombre descriptivo para el resultado.</div>
-            </div>
-                <input type="button" class="btn btn-primary" value="Actualizar" onclick="actualizarResultado();">
-                </form>
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="Actualizar">
+                    </form>
                 </div>
             </div>
         </div>
-    </body>"
+    </body>
 </html>

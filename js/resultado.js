@@ -1,32 +1,37 @@
 let g_id_resultado = null;
 function agregarResultado() {
-    //Obtenemos el resultado
-    var resultado = document.getElementById("txt_resultado").value;
+    const nombre = document.getElementById("txt_nombre_resultado").value.trim();
+    if (!nombre) {
+        alert("Debe ingresar un nombre para el resultado.");
+        return;
+    }
+    const fecha = new Date().toISOString().slice(0, 19).replace('T', ' '); // formato MySQL DATETIME
 
-    //Definición de encabezados
-    const headers = new Headers();
+    const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    //Datos a enviar
     const raw = JSON.stringify({
-        "nombre:resultado": resultado,
-        "fecha_registro": "2025-06-21 00:00:00"
+        "nombre_resultado": nombre,
+        "fecha_registro": fecha
     });
 
-    //Configuración de la solicitud
     const requestOptions = {
         method: 'POST',
-        headers: headers,
+        headers: myHeaders,
         body: raw,
         redirect: 'follow'
     };
 
-    //Ejecutamos la solicitud HTTP a la API
-    fetch("http://144.126.136.43/api/resultado"), requestOptions
+    fetch("http://144.126.136.43/api/resultado", requestOptions)
         .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
-    
+        .then((result) => {
+            mostrarMensaje("Resultado agregado correctamente.", "success");
+            setTimeout(() => window.location.href = "listar.html", 1500);
+        })
+        .catch((error) => {
+            mostrarMensaje("Error al agregar resultado.", "danger");
+            console.error(error);
+        });
 }
 function listarResultados() {
     const requestOptions = {
@@ -37,8 +42,9 @@ function listarResultados() {
     fetch("http://144.126.136.43/api/resultado", requestOptions)
         .then((response) => response.json())
         .then((json) => {
+            console.log(json); // <-- Agrega esto
             const tbody = document.querySelector("#tbl_resultado tbody");
-            tbody.innerHTML = ""; // Limpia antes de agregar
+            tbody.innerHTML = "";
             json.forEach(element => {
                 tbody.innerHTML += `
                     <tr>
@@ -70,8 +76,10 @@ function actualizarResultado() {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
+    const nombre = document.getElementById("txt_nombre_resultado").value;
+
     const raw = JSON.stringify({
-        "nombre_resultado": "Prueba 1905"
+        "nombre_resultado": nombre
     });
 
     const requestOptions = {
@@ -81,10 +89,16 @@ function actualizarResultado() {
         redirect: 'follow'
     };
 
-    fetch("http://144.126.136.43/api/resultado/267", requestOptions)
+    fetch("http://144.126.136.43/api/resultado/" + g_id_resultado, requestOptions)
         .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
+        .then((result) => {
+            mostrarMensaje("Resultado actualizado correctamente.", "success");
+            setTimeout(() => window.location.href = "listar.html", 1500);
+        })
+        .catch((error) => {
+            mostrarMensaje("Error al actualizar resultado.", "danger");
+            console.error(error);
+        });
 }
 //Obtenemos el ID del resultado que queremos actualizar
 function obtenerIdActualizacion() {
@@ -114,46 +128,30 @@ function completarFormulario(element,index,arr) {
 
 }
 
+function obtenerIdEliminacion() {
+    const queryString = window.location.search;
+    const parametros = new URLSearchParams(queryString);
+    g_id_resultado = parametros.get("id");
+    document.getElementById("lbl_eliminar").innerText = "ID: " + g_id_resultado;
+}
+
 function eliminarResultado() {
+    if (!g_id_resultado) {
+        alert("No se encontró el ID del resultado.");
+        return;
+    }
     const requestOptions = {
         method: 'DELETE',
         redirect: 'follow'
     };
-
-    fetch("http://144.126.136.43/api/resultado/"+g_id_resultado, requestOptions)
-        .then((response) => {
-            if(response.status === 200){
+    fetch("http://144.126.136.43/api/resultado/" + g_id_resultado, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                alert("Resultado eliminado correctamente");
                 window.location.href = "listar.html";
+            } else {
+                alert("Error al eliminar el resultado");
             }
         })
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
-}
-
-function obtenerIdEliminacion() {
-    const queryString = window.location.search;
-    const parametros = new URLSearchParams(queryString);
-    const p_id_resultado = parametros.get("id");
-    
-    g_id_resultado = p_id_resultado;
-
-    obtenerDatosEliminacion(p_id_resultado);
-}
-
-function obtenerDatosEliminacion(id_resultado) {
-    const requestOptions = {
-        method: 'GET',
-        redirect: 'follow'
-    };
-
-    fetch("http://144.126.136.43/api/resultado/"+id_resultado, requestOptions)
-        .then((response) => response.json())
-        .then((json) => json.forEach(completarEtiquetas))
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
-}
-function completarEtiquetas(element,index,arr) {
-    //Completamos una etiqueta con la pregunta al usuario
-    var nombreEliminar = element.nombre_resultado;
-    document.getElementById("lbl_eliminar").innerHTML ="<b>" + nombreEliminar + "</b>";
+        .catch(error => console.error(error));
 }
