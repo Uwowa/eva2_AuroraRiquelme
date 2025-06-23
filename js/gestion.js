@@ -143,7 +143,7 @@ function agregarGestion() {
     return JSON.parse(text);
   })
   .then(data => {
-    mostrarMensaje("✅ Gestión agregada correctamente.", "success");
+    mostrarMensaje("Gestión agregada correctamente.", "success");
     setTimeout(() => location.href = "listar.html", 1500);
   })
   .catch(_ => { /* ya mostramos el mensaje */ });
@@ -159,7 +159,7 @@ function eliminarGestion() {
   fetch(`${BASE_GESTION_URL}${window.g_id_gestion}`, { method: "DELETE" })
     .then(res => {
       if (!res.ok) throw new Error("No se eliminó");
-      mostrarMensaje("Eliminado 👍", "success");
+      mostrarMensaje("Gestión Eliminada", "success");
       setTimeout(() => (window.location.href = "listar.html"), 1000);
     })
     .catch(() => mostrarMensaje("Falló eliminación", "danger"));

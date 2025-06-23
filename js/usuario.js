@@ -85,13 +85,13 @@ function obtenerIdActualizacionUsuario() {
     fetch(`http://144.126.136.43/api/usuario/${g_id_usuario}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("txt_id_usuario").value = data.id_usuario;
-            document.getElementById("txt_dv").value = data.dv;
-            document.getElementById("txt_nombres").value = data.nombres;
-            document.getElementById("txt_apellidos").value = data.apellidos;
-            document.getElementById("txt_email").value = data.email;
-            document.getElementById("txt_celular").value = data.celular;
-            document.getElementById("txt_username").value = data.username;
+            document.getElementById("txt_id_usuario").value = data.id_usuario ?? "Ingrese ID Usuario";
+            document.getElementById("txt_dv").value = data.dv ?? "Ingrese DV";
+            document.getElementById("txt_nombres").value = data.nombres ?? "Ingrese Nombres";
+            document.getElementById("txt_apellidos").value = data.apellidos ?? "Ingrese Apellidos";
+            document.getElementById("txt_email").value = data.email ?? "Ingrese Email";
+            document.getElementById("txt_celular").value = data.celular ?? "Ingrese Celular";
+            document.getElementById("txt_username").value = data.username ?? "Ingrese Username";
             // No mostrar password por seguridad
         });
 }
@@ -113,7 +113,7 @@ function actualizarUsuario() {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        id_usuario, dv, nombres, apellidos, email, celular, username
+        nombres, apellidos, email, celular, username
     });
 
     fetch(`http://144.126.136.43/api/usuario/${g_id_usuario}`, {

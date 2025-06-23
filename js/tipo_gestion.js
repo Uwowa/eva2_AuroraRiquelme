@@ -74,24 +74,19 @@ function obtenerIdActualizacionTipoGestion() {
     fetch(`http://144.126.136.43/api/tipo_gestion/${g_id_tipo_gestion}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("txt_id_tipo_gestion").value = data.id_tipo_gestion;
-            document.getElementById("txt_nombre_tipo").value = data.nombre_tipo;
+            document.getElementById("txt_id_tipo_gestion").value = data.id_tipo_gestion ?? "";
+            document.getElementById("txt_nombre_tipo_gestion").value = data.nombre_tipo_gestion ?? "Ingrese Nombre";
         });
 }
 
 function actualizarTipoGestion() {
-    const id_tipo_gestion = document.getElementById("txt_id_tipo_gestion").value.trim();
-    if (!id_tipo_gestion) {
-        mostrarMensaje("ID de tipo de gestión es obligatorio.", "warning");
-        return;
-    }
-    const nombre_tipo = document.getElementById("txt_nombre_tipo").value.trim();
+    const nombre_tipo_gestion = document.getElementById("txt_nombre_tipo_gestion").value.trim();
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        id_tipo_gestion, nombre_tipo
+        nombre_tipo_gestion
     });
 
     fetch(`http://144.126.136.43/api/tipo_gestion/${g_id_tipo_gestion}`, {

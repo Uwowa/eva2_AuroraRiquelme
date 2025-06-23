@@ -82,22 +82,16 @@ function obtenerIdActualizacionCliente() {
     fetch(`http://144.126.136.43/api/cliente/${g_id_cliente}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("txt_id_cliente").value = data.id_cliente;
-            document.getElementById("txt_dv").value = data.dv;
-            document.getElementById("txt_nombres").value = data.nombres;
-            document.getElementById("txt_apellidos").value = data.apellidos;
-            document.getElementById("txt_email").value = data.email;
-            document.getElementById("txt_celular").value = data.celular;
+            document.getElementById("txt_id_cliente").value = data.id_cliente ?? "";
+            document.getElementById("txt_dv").value = data.dv ?? "";
+            document.getElementById("txt_nombres").value = data.nombres ?? "";
+            document.getElementById("txt_apellidos").value = data.apellidos ?? "";
+            document.getElementById("txt_email").value = data.email ?? "";
+            document.getElementById("txt_celular").value = data.celular ?? "";
         });
 }
 
 function actualizarCliente() {
-    const id_cliente = document.getElementById("txt_id_cliente").value.trim();
-    if (!id_cliente) {
-        mostrarMensaje("ID de cliente es obligatorio.", "warning");
-        return;
-    }
-    const dv = document.getElementById("txt_dv").value.trim();
     const nombres = document.getElementById("txt_nombres").value.trim();
     const apellidos = document.getElementById("txt_apellidos").value.trim();
     const email = document.getElementById("txt_email").value.trim();
@@ -107,7 +101,7 @@ function actualizarCliente() {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        id_cliente, dv, nombres, apellidos, email, celular
+        nombres, apellidos, email, celular
     });
 
     fetch(`http://144.126.136.43/api/cliente/${g_id_cliente}`, {
