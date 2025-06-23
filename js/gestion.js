@@ -108,23 +108,45 @@ function agregarGestion() {
   const t = document.getElementById("sel_tipo_gestion").value;
   const r = document.getElementById("sel_resultado").value;
   const m = document.getElementById("txt_comentarios").value.trim();
-  if (!u||!c||!t||!r||!m) {
+
+  if (!u || !c || !t || !r || !m) {
     mostrarMensaje("Todos los campos son obligatorios.", "danger");
     return;
   }
-  const body = { id_usuario: u, id_cliente: c, id_tipo_gestion: t, id_resultado: r, comentarios: m };
+
+  // Incluimos fecha_registro en formato ISO-MySQL
+  const fecha = new Date().toISOString().slice(0,19).replace("T", " ");
+
+  const body = {
+    id_usuario:      u,
+    id_cliente:      c,
+    id_tipo_gestion: t,
+    id_resultado:    r,
+    comentarios:     m,
+    fecha_registro:  fecha
+  };
+
+  console.log("POST /api/gestion/ body:", body);
+
   fetch(BASE_GESTION_URL, {
-    method: "POST",
+    method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    body:    JSON.stringify(body)
   })
-    .then(async res => {
-      const text = await res.text();
-      if (!res.ok) throw new Error(text);
-      mostrarMensaje("Gestión agregada ✅", "success");
-      setTimeout(() => window.location.href = "listar.html", 1500);
-    })
-    .catch(err => mostrarMensaje(`Error: ${err.message}`, "danger"));
+  .then(async res => {
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("400 Error body:", text);
+      mostrarMensaje(`Error al agregar: ${text}`, "danger");
+      throw new Error(text);
+    }
+    return JSON.parse(text);
+  })
+  .then(data => {
+    mostrarMensaje("✅ Gestión agregada correctamente.", "success");
+    setTimeout(() => location.href = "listar.html", 1500);
+  })
+  .catch(_ => { /* ya mostramos el mensaje */ });
 }
 
 function obtenerIdEliminacionGestion() {
@@ -166,25 +188,33 @@ function obtenerIdActualizacionGestion() {
 }
 
 function actualizarGestion() {
-  const id = new URLSearchParams(window.location.search).get("id");
-  const u = document.getElementById("sel_usuarios").value;
-  const c = document.getElementById("sel_cliente").value;
-  const t = document.getElementById("sel_tipo_gestion").value;
-  const r = document.getElementById("sel_resultado").value;
-  const m = document.getElementById("txt_comentarios").value.trim();
-  if (!u||!c||!t||!r||!m) {
-    mostrarMensaje("Todos los campos obligatorios.", "danger");
-    return;
-  }
-  fetch(`${BASE_GESTION_URL}${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id_usuario: u, id_cliente: c, id_tipo_gestion: t, id_resultado: r, comentarios: m })
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Falló update");
-      mostrarMensaje("Actualizado 😊", "success");
-      setTimeout(() => (window.location.href = "listar.html"), 1500);
+    const id = new URLSearchParams(window.location.search).get("id");
+    const id_usuario = document.getElementById("sel_usuarios").value;
+    const id_cliente = document.getElementById("sel_cliente").value;
+    const id_tipo_gestion = document.getElementById("sel_tipo_gestion").value;
+    const id_resultado = document.getElementById("sel_resultado").value;
+    const comentarios = document.getElementById("txt_comentarios").value.trim();
+
+    if (!id_usuario || !id_cliente || !id_tipo_gestion || !id_resultado || !comentarios) {
+        mostrarMensaje("Todos los campos son obligatorios.", "danger");
+        return;
+    }
+
+    fetch(`${BASE_GESTION_URL}${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_usuario,
+            id_cliente,
+            id_tipo_gestion,
+            id_resultado,
+            comentarios
+        })
     })
-    .catch(() => mostrarMensaje("Error al actualizar", "danger"));
+    .then(res => {
+        if (!res.ok) throw new Error("Falló actualización");
+        mostrarMensaje("Actualizado", "success");
+        setTimeout(() => (window.location.href = "listar.html"), 1500);
+    })
+    .catch(() => mostrarMensaje("Error al actualizar gestión.", "danger"));
 }
