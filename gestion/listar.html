@@ -1,77 +1,49 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <title>Lista de Gestiones</title>
-    <script src="../js/gestion.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
-    <link href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Lista de Gestiones</title>
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- DataTables CSS (v1.13.6) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+  />
+
+  <!-- jQuery y DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"
+  ></script>
+
+  <!-- Tu script de gestión (carga tras jQuery/DataTables) -->
+  <script src="../js/gestion.js"></script>
 </head>
 <body onload="listarGestiones();">
-    <div class="container">
-        <!-- inicio navbar -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Clientes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../usuario/listar.html">Usuarios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../resultado/listar.html">Resultados</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../tipo_gestion/listar.html">Tipo de gestión</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="listar.html">Gestiones</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- fin navbar -->
-        <h1>Lista de Gestiones</h1>
-        <div class="alert alert-primary" role="alert">
-            Lista de las diferentes gestiones en el sistema.
-        </div>
-        <hr>
-        <a href="agregar.html" class="btn btn-primary mb-3">Nueva Gestión</a>
-        <div class="card">
-            <div class="card-header">Lista de Gestiones</div>
-            <div class="card-body">
-                <table id="tbl_gestion" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>RUT USUARIO</th>
-                            <th>USUARIO</th>
-                            <th>RUT CLIENTE</th>
-                            <th>CLIENTE</th>
-                            <th>TIPO</th>
-                            <th>RESULTADO</th>
-                            <th>COMENTARIOS</th>
-                            <th>FECHA DE REGISTRO</th>
-                            <th>OPCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Aquí se insertan las filas dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <div id="mensaje"></div>
+  <div class="container mt-4">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
+      <!-- … tu navbar … -->
+    </nav>
+    <h1>Lista de Gestiones</h1>
+    <a href="agregar.html" class="btn btn-primary mb-3">Nueva Gestión</a>
+    <div class="table-responsive">
+      <table id="tbl_gestion" class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th><th>Usuario</th><th>Cliente</th><th>Tipo</th>
+            <th>Resultado</th><th>Comentarios</th><th>Fecha</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
+  </div>
 </body>
 </html>

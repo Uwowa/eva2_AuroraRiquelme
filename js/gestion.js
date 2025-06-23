@@ -1,207 +1,190 @@
-let g_id_gestion = null;
+const BASE_GESTION_URL = "http://144.126.136.43/api/gestion/"; // Solo una vez, aquí
 
-// Mostrar mensajes Bootstrap
 function mostrarMensaje(texto, tipo = "success") {
-    let mensajeDiv = document.getElementById("mensaje");
-    if (!mensajeDiv) {
-        mensajeDiv = document.createElement("div");
-        mensajeDiv.id = "mensaje";
-        document.body.prepend(mensajeDiv);
-    }
-    mensajeDiv.innerHTML = `
-        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
-            ${texto}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+  let mensajeDiv = document.getElementById("mensaje");
+  if (!mensajeDiv) {
+    mensajeDiv = document.createElement("div");
+    mensajeDiv.id = "mensaje";
+    document.body.prepend(mensajeDiv);
+  }
+  mensajeDiv.innerHTML = `
+    <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+      ${texto}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>`;
+  setTimeout(() => mensajeDiv && (mensajeDiv.innerHTML = ""), 3000);
 }
 
-// LISTAR
 function listarGestiones() {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-        "query": "SELECT g.id_gestion, u.id_usuario as rut_usuario, CONCAT(u.nombres,' ',u.apellidos) as nombre_usuario, c.id_cliente as rut_cliente, CONCAT(c.nombres,' ',c.apellidos) as nombre_cliente, tg.nombre_tipo_gestion, r.nombre_resultado, g.comentarios, g.fecha_registro FROM gestiones g INNER JOIN usuarios u ON g.id_usuario = u.id_usuario INNER JOIN clientes c ON g.id_cliente = c.id_cliente INNER JOIN tipo_gestion tg ON g.id_tipo_gestion = tg.id_tipo_gestion INNER JOIN resultado r ON g.id_resultado = r.id_resultado"
+  fetch(BASE_GESTION_URL)
+    .then(res => res.json())
+    .then(gestiones => {
+      const tbody = document.querySelector("#tbl_gestion tbody");
+      tbody.innerHTML = "";
+      gestiones.forEach(g => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${g.id_gestion}</td>
+            <td>${g.id_usuario}</td>
+            <td>${g.id_cliente}</td>
+            <td>${g.id_tipo_gestion}</td>
+            <td>${g.id_resultado}</td>
+            <td>${g.comentarios}</td>
+            <td>${g.fecha_registro}</td>
+            <td>
+              <a href="actualizar.html?id=${g.id_gestion}" class="btn btn-warning btn-sm">Actualizar</a>
+              <a href="eliminar.html?id=${g.id_gestion}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+          </tr>`;
+      });
+      $('#tbl_gestion').DataTable();
+    })
+    .catch(err => {
+      console.error(err);
+      mostrarMensaje("Error al cargar gestiones.", "danger");
     });
-
-    const requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
-
-    fetch("http://144.126.136.43/dynamic", requestOptions)
-        .then((response) => response.json())
-        .then((json) => {
-            const tbody = document.querySelector("#tbl_gestion tbody");
-            tbody.innerHTML = "";
-            json.forEach(element => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${element.id_gestion}</td>
-                        <td>${element.rut_usuario}</td>
-                        <td>${element.nombre_usuario}</td>
-                        <td>${element.rut_cliente}</td>
-                        <td>${element.nombre_cliente}</td>
-                        <td>${element.nombre_tipo_gestion}</td>
-                        <td>${element.nombre_resultado}</td>
-                        <td>${element.comentarios}</td>
-                        <td>${element.fecha_registro}</td>
-                        <td>
-                            <a href='actualizar.html?id=${element.id_gestion}' class='btn btn-warning btn-sm'>Actualizar</a>
-                            <a href='eliminar.html?id=${element.id_gestion}' class='btn btn-danger btn-sm'>Eliminar</a>
-                        </td>
-                    </tr>`;
-            });
-            $('#tbl_gestion').DataTable();
-        })
-        .catch((error) => {
-            mostrarMensaje("Error al listar gestiones.", "danger");
-            console.error(error);
-        });
 }
 
-// AGREGAR
+function cargarListasDesplegables() {
+  return Promise.all([
+    cargarListaClientes(),
+    cargarListaUsuarios(),
+    cargarListaTipoGestion(),
+    cargarListaResultado()
+  ]);
+}
+
+function cargarListaClientes() {
+  return fetch("http://144.126.136.43/api/cliente/")
+    .then(r => r.json())
+    .then(json => {
+      const sel = document.getElementById("sel_cliente");
+      sel.innerHTML = '<option value="">Seleccione un cliente</option>';
+      json.forEach(e =>
+        sel.innerHTML += `<option value="${e.id_cliente}">${e.id_cliente}-${e.dv} ${e.apellidos} ${e.nombres}</option>`
+      );
+    });
+}
+
+function cargarListaUsuarios() {
+  return fetch("http://144.126.136.43/api/usuario/")
+    .then(r => r.json())
+    .then(json => {
+      const sel = document.getElementById("sel_usuarios");
+      sel.innerHTML = '<option value="">Seleccione un usuario</option>';
+      json.forEach(e =>
+        sel.innerHTML += `<option value="${e.id_usuario}">${e.id_usuario}-${e.dv} ${e.apellidos} ${e.nombres}</option>`
+      );
+    });
+}
+
+function cargarListaTipoGestion() {
+  return fetch("http://144.126.136.43/api/tipo_gestion/")
+    .then(r => r.json())
+    .then(json => {
+      const sel = document.getElementById("sel_tipo_gestion");
+      sel.innerHTML = '<option value="">Seleccione tipo gestión</option>';
+      json.forEach(e =>
+        sel.innerHTML += `<option value="${e.id_tipo_gestion}">${e.nombre_tipo_gestion}</option>`
+      );
+    });
+}
+
+function cargarListaResultado() {
+  return fetch("http://144.126.136.43/api/resultado/")
+    .then(r => r.json())
+    .then(json => {
+      const sel = document.getElementById("sel_resultado");
+      sel.innerHTML = '<option value="">Seleccione resultado</option>';
+      json.forEach(e =>
+        sel.innerHTML += `<option value="${e.id_resultado}">${e.nombre_resultado}</option>`
+      );
+    });
+}
+
 function agregarGestion() {
-    const id_usuario = document.getElementById("txt_id_usuario").value.trim();
-    const id_cliente = document.getElementById("txt_id_cliente").value.trim();
-    const id_tipo_gestion = document.getElementById("txt_id_tipo_gestion").value.trim();
-    const id_resultado = document.getElementById("txt_id_resultado").value.trim();
-    const comentarios = document.getElementById("txt_comentarios").value.trim();
-    const fecha_registro = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    if (!id_usuario || !id_cliente || !id_tipo_gestion || !id_resultado) {
-        mostrarMensaje("Todos los campos son obligatorios.", "warning");
-        return;
-    }
-
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-        id_usuario,
-        id_cliente,
-        id_tipo_gestion,
-        id_resultado,
-        comentarios,
-        fecha_registro
-    });
-
-    const requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
-
-    fetch("http://144.126.136.43/api/gestion", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-            mostrarMensaje("Gestión agregada correctamente.", "success");
-            setTimeout(() => window.location.href = "listar.html", 1500);
-        })
-        .catch((error) => {
-            mostrarMensaje("Error al agregar gestión.", "danger");
-            console.error(error);
-        });
+  const u = document.getElementById("sel_usuarios").value;
+  const c = document.getElementById("sel_cliente").value;
+  const t = document.getElementById("sel_tipo_gestion").value;
+  const r = document.getElementById("sel_resultado").value;
+  const m = document.getElementById("txt_comentarios").value.trim();
+  if (!u||!c||!t||!r||!m) {
+    mostrarMensaje("Todos los campos son obligatorios.", "danger");
+    return;
+  }
+  const body = { id_usuario: u, id_cliente: c, id_tipo_gestion: t, id_resultado: r, comentarios: m };
+  fetch(BASE_GESTION_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  })
+    .then(async res => {
+      const text = await res.text();
+      if (!res.ok) throw new Error(text);
+      mostrarMensaje("Gestión agregada ✅", "success");
+      setTimeout(() => window.location.href = "listar.html", 1500);
+    })
+    .catch(err => mostrarMensaje(`Error: ${err.message}`, "danger"));
 }
 
-// ACTUALIZAR
-function obtenerIdActualizacionGestion() {
-    const queryString = window.location.search;
-    const parametros = new URLSearchParams(queryString);
-    g_id_gestion = parametros.get("id");
-    obtenerDatosActualizacionGestion(g_id_gestion);
-}
-
-function obtenerDatosActualizacionGestion(id_gestion) {
-    fetch(`http://144.126.136.43/api/gestion/${id_gestion}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("txt_id_usuario").value = data.id_usuario;
-            document.getElementById("txt_id_cliente").value = data.id_cliente;
-            document.getElementById("txt_id_tipo_gestion").value = data.id_tipo_gestion;
-            document.getElementById("txt_id_resultado").value = data.id_resultado;
-            document.getElementById("txt_comentarios").value = data.comentarios;
-        })
-        .catch(error => {
-            mostrarMensaje("Error al cargar datos de gestión.", "danger");
-            console.error(error);
-        });
-}
-
-function actualizarGestion() {
-    const id_usuario = document.getElementById("txt_id_usuario").value.trim();
-    const id_cliente = document.getElementById("txt_id_cliente").value.trim();
-    const id_tipo_gestion = document.getElementById("txt_id_tipo_gestion").value.trim();
-    const id_resultado = document.getElementById("txt_id_resultado").value.trim();
-    const comentarios = document.getElementById("txt_comentarios").value.trim();
-
-    if (!id_usuario || !id_cliente || !id_tipo_gestion || !id_resultado) {
-        mostrarMensaje("Todos los campos son obligatorios.", "warning");
-        return;
-    }
-
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-        id_usuario,
-        id_cliente,
-        id_tipo_gestion,
-        id_resultado,
-        comentarios
-    });
-
-    const requestOptions = {
-        method: 'PATCH',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
-
-    fetch(`http://144.126.136.43/api/gestion/${g_id_gestion}`, requestOptions)
-        .then(response => response.text())
-        .then(result => {
-            mostrarMensaje("Gestión actualizada correctamente.", "success");
-            setTimeout(() => window.location.href = "listar.html", 1500);
-        })
-        .catch(error => {
-            mostrarMensaje("Error al actualizar gestión.", "danger");
-            console.error(error);
-        });
-}
-
-// ELIMINAR
 function obtenerIdEliminacionGestion() {
-    const queryString = window.location.search;
-    const parametros = new URLSearchParams(queryString);
-    g_id_gestion = parametros.get("id");
-    document.getElementById("lbl_eliminar_gestion").innerText = "ID: " + g_id_gestion;
+  const id = new URLSearchParams(window.location.search).get("id");
+  document.getElementById("lbl_eliminar_gestion").innerText = `ID: ${id}`;
+  window.g_id_gestion = id;
 }
 
 function eliminarGestion() {
-    if (!g_id_gestion) {
-        mostrarMensaje("No se encontró el ID de la gestión.", "danger");
-        return;
-    }
-    const requestOptions = {
-        method: 'DELETE',
-        redirect: 'follow'
-    };
-    fetch(`http://144.126.136.43/api/gestion/${g_id_gestion}`, requestOptions)
-        .then(response => {
-            if (response.ok) {
-                mostrarMensaje("Gestión eliminada correctamente.", "success");
-                setTimeout(() => window.location.href = "listar.html", 1500);
-            } else {
-                mostrarMensaje("Error al eliminar gestión.", "danger");
-            }
-        })
-        .catch(error => {
-            mostrarMensaje("Error al eliminar gestión.", "danger");
-            console.error(error);
-        });
+  fetch(`${BASE_GESTION_URL}${window.g_id_gestion}`, { method: "DELETE" })
+    .then(res => {
+      if (!res.ok) throw new Error("No se eliminó");
+      mostrarMensaje("Eliminado 👍", "success");
+      setTimeout(() => (window.location.href = "listar.html"), 1000);
+    })
+    .catch(() => mostrarMensaje("Falló eliminación", "danger"));
+}
+
+function obtenerIdActualizacionGestion() {
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (!id) return;
+  Promise.all([
+    cargarListaClientes(),
+    cargarListaUsuarios(),
+    cargarListaTipoGestion(),
+    cargarListaResultado()
+  ]).then(() => {
+    fetch(`${BASE_GESTION_URL}${id}`)
+      .then(r => r.json())
+      .then(g => {
+        document.getElementById("sel_usuarios").value = g.id_usuario;
+        document.getElementById("sel_cliente").value = g.id_cliente;
+        document.getElementById("sel_tipo_gestion").value = g.id_tipo_gestion;
+        document.getElementById("sel_resultado").value = g.id_resultado;
+        document.getElementById("txt_comentarios").value = g.comentarios;
+      })
+      .catch(() => mostrarMensaje("No se cargó gestión", "danger"));
+  });
+}
+
+function actualizarGestion() {
+  const id = new URLSearchParams(window.location.search).get("id");
+  const u = document.getElementById("sel_usuarios").value;
+  const c = document.getElementById("sel_cliente").value;
+  const t = document.getElementById("sel_tipo_gestion").value;
+  const r = document.getElementById("sel_resultado").value;
+  const m = document.getElementById("txt_comentarios").value.trim();
+  if (!u||!c||!t||!r||!m) {
+    mostrarMensaje("Todos los campos obligatorios.", "danger");
+    return;
+  }
+  fetch(`${BASE_GESTION_URL}${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id_usuario: u, id_cliente: c, id_tipo_gestion: t, id_resultado: r, comentarios: m })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Falló update");
+      mostrarMensaje("Actualizado 😊", "success");
+      setTimeout(() => (window.location.href = "listar.html"), 1500);
+    })
+    .catch(() => mostrarMensaje("Error al actualizar", "danger"));
 }

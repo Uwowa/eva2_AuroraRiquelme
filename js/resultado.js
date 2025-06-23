@@ -155,3 +155,17 @@ function eliminarResultado() {
         })
         .catch(error => console.error(error));
 }
+
+function mostrarMensaje(mensaje, tipo = "info") {
+    let alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${tipo} mt-3`;
+    alertDiv.role = "alert";
+    alertDiv.innerText = mensaje;
+
+    const contenedor = document.querySelector(".container");
+    contenedor.prepend(alertDiv);
+
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
