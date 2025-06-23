@@ -29,13 +29,13 @@
                             <a class="nav-link" href="../usuario/listar.html">Usuarios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Resultado</a>
+                            <a class="nav-link" href="../resultado/listar.html">Resultados</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Tipo de gestión</a>
+                            <a class="nav-link" href="../tipo_gestion/listar.html">Tipo de gestión</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Gestiones</a>
+                            <a class="nav-link" href="listar.html">Gestiones</a>
                         </li>
                     </ul>
                 </div>
@@ -53,18 +53,22 @@
             <div class="card-body">
                 <table id="tbl_gestion" class="table table-striped">
                     <thead>
-                        <th>ID</th>
-                        <th>RUT USUARIO</th>
-                        <th>USUARIO</th>
-                        <th>RUT CLIENTE</th>
-                        <th>CLIENTE</th>
-                        <th>TIPO</th>
-                        <th>RESULTADO</th>
-                        <th>COMENTARIOS</th>
-                        <th>FECHA DE REGISTRO</th>
-                        <th>OPCIONES</th>
+                        <tr>
+                            <th>ID</th>
+                            <th>RUT USUARIO</th>
+                            <th>USUARIO</th>
+                            <th>RUT CLIENTE</th>
+                            <th>CLIENTE</th>
+                            <th>TIPO</th>
+                            <th>RESULTADO</th>
+                            <th>COMENTARIOS</th>
+                            <th>FECHA DE REGISTRO</th>
+                            <th>OPCIONES</th>
+                        </tr>
                     </thead>
-                    <tbody id="data"></tbody>
+                    <tbody>
+                        <!-- Aquí se insertan las filas dinámicamente -->
+                    </tbody>
                 </table>
             </div>
         </div>
